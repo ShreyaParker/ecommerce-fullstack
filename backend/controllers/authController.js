@@ -12,7 +12,7 @@ export const registerUser = async (req,res) => {
 
         }
 
-        const salt = await bcrypt.gensalt(10);
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password,salt);
 
         const newUser = await pool.query(
