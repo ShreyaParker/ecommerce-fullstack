@@ -37,3 +37,17 @@ export const getProductById = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+export const createProduct = async (req, res) => {
+    const { name, description, price, stock_quantity, image_url } = req.body;
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO products (name, description, price, stock_quantity, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [name, description, price, stock_quantity, image_url]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};

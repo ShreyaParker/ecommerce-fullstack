@@ -26,6 +26,12 @@ const Navbar = () => {
 
                     {user ? (
                         <>
+                            {user.role === 'admin' && (
+                                <Link to="/admin" className="flex items-center text-red-400 hover:text-red-300 transition font-bold border border-red-400 rounded px-3 py-1 mr-4">
+                                    Admin Panel
+                                </Link>
+                            )}
+
                             <Link to="/myorders" className="flex items-center hover:text-blue-400 transition">
                                 <Package size={20} className="mr-1" /> My Orders
                             </Link>
