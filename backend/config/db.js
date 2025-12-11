@@ -6,20 +6,17 @@ dotenv.config();
 const { Pool } = pg;
 
 const pool = new Pool({
-    user: process.env.DB_USER,
-    host : process.env.DB_HOST,
-    database : process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port : process.env.DB_PORT,
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 const connectDB = async () =>{
     try{
         await pool.connect();
-        console.log("PostgreSQL Connected!");
+        console.log("Database Connected Successfully!");
 
     } catch(err){
-        console.error("Error connecting to postgreSQL",err.message);
+        console.error("Error connecting to Database",err.message);
         process.exit(1);
     }
 
