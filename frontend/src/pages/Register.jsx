@@ -1,79 +1,76 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { User, Mail, Lock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+    const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('/api/auth/register', formData);
-            alert('Registration Successful! Token: ' + res.data.token);
-            console.log(res.data);
+            await axios.post('/api/auth/register', formData);
+            alert('Registration Successful! Please Login.');
+            navigate('/login');
         } catch (error) {
-            alert('Error: ' + (error.response?.data?.message || 'Something went wrong'));
+            console.error(error);
+            alert(error.response?.data?.message || 'Registration failed');
         }
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Create Account</h2>
+        <div className="flex justify-center items-center h-[calc(100vh-80px)] bg-gray-100">
+            <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
+                <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Create Account</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-
-
-                    <div className="flex items-center border border-gray-300 rounded-md p-2">
-                        <User className="text-gray-400 mr-2" size={20} />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="relative">
+                        <User className="absolute left-4 top-3.5 text-gray-400" size={20} />
                         <input
                             type="text"
                             name="username"
-                            placeholder="Username"
+                            placeholder="Full Name"
                             onChange={handleChange}
-                            className="w-full outline-none"
+                            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
 
-
-                    <div className="flex items-center border border-gray-300 rounded-md p-2">
-                        <Mail className="text-gray-400 mr-2" size={20} />
+                    <div className="relative">
+                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={20} />
                         <input
                             type="email"
                             name="email"
                             placeholder="Email Address"
                             onChange={handleChange}
-                            className="w-full outline-none"
+                            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
 
-
-                    <div className="flex items-center border border-gray-300 rounded-md p-2">
-                        <Lock className="text-gray-400 mr-2" size={20} />
+                    <div className="relative">
+                        <Lock className="absolute left-4 top-3.5 text-gray-400" size={20} />
                         <input
                             type="password"
                             name="password"
                             placeholder="Password"
                             onChange={handleChange}
-                            className="w-full outline-none"
+                            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
 
-                    <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                    <button type="submit" className="w-full bg-gray-900 text-white py-3.5 rounded-xl font-bold hover:bg-gray-800 transition shadow-lg active:scale-95">
                         Sign Up
                     </button>
                 </form>
+
+                <p className="mt-6 text-center text-gray-600">
+                    Already have an account? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Login</Link>
+                </p>
             </div>
         </div>
     );
