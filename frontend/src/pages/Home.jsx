@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ShoppingCart } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../redux/cartSlice';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -11,42 +14,31 @@ const Home = () => {
                 const { data } = await axios.get('/api/products');
                 setProducts(data);
             } catch (error) {
-                console.error('Error fetching products:', error);
+                console.error(error);
             }
         };
         fetchProducts();
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
-            <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Latest Products</h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div>
+            <h1 className="text-4xl font-extrabold text-center mb-12 text-gray-800">Latest Collection</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                 {products.map((product) => (
-                    <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                        <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-48 object-cover"
-                        />
-
-                        <div className="p-4">
-                            <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-                            <p className="text-gray-600 text-sm mb-4 h-12 overflow-hidden">
-                                {product.description}
-                            </p>
-
-                            <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold text-blue-600">
-                  ₹{product.price}
-                </span>
-
+                    <div key={product.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div className="h-64 overflow-hidden bg-gray-100 flex items-center justify-center">
+                            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="p-6">
+                            <h2 className="text-xl font-bold text-gray-900 mb-2 truncate">{product.name}</h2>
+                            <p className="text-gray-500 text-sm mb-4 line-clamp-2 h-10">{product.description}</p>
+                            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                                <span className="text-2xl font-bold text-gray-900">₹{product.price}</span>
                                 <button
-                                    className="bg-black text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-800 transition"
-                                    onClick={() => alert(`Added ${product.name} to cart!`)}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xlkq flex items-center font-semibold transition active:scale-95"
+                                    onClick={() => dispatch(addToCart(product))}
                                 >
-                                    <ShoppingCart size={18} className="mr-2" />
-                                    Add to Cart
+                                    <ShoppingCart size={18} className="mr-2" /> Add
                                 </button>
                             </div>
                         </div>
