@@ -2,11 +2,82 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Trash2 } from 'lucide-react';
 import { removeFromCart } from '../redux/cartSlice';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Cart = () => {
     const { cartItems, totalPrice } = useSelector((state) => state.cart);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const loadScript = (src) => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleCheckout = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            alert("Please login to checkout");
+            navigate('/login');
+            return;
+        }
+
+        const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+        if (!res) {
+            alert("Razorpay SDK failed to load. Are you online?");
+            return;
+        }
+
+        const { data: { key } } = await axios.get("/api/payment/key");
+        const { data: { order } } = await axios.post("/api/payment/checkout", {
+            amount: totalPrice,
+            cartItems,
+            userId: user.id
+        });
+
+        const options = {
+            key: key,
+            amount: order.amount,
+            currency: "INR",
+            name: "MyShop",
+            description: "Test Transaction",
+            image: "https://example.com/your_logo",
+            order_id: order.id,
+            handler: async function (response) {
+                const verifyData = {
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    cartItems,
+                    userId: user.id
+                };
+
+                const result = await axios.post("/api/payment/verify", verifyData);
+                if (result.data.success) {
+                    alert("Payment Successful! Order Placed.");
+                    navigate('/');
+                } else {
+                    alert("Payment Verification Failed");
+                }
+            },
+            prefill: {
+                name: user.username,
+                email: user.email,
+                contact: "9999999999"
+            },
+            theme: {
+                color: "#3399cc"
+            }
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+    };
 
     return (
         <div className="container mx-auto p-4 max-w-4xl">
@@ -42,7 +113,7 @@ const Cart = () => {
                     <div className="bg-white p-6 rounded-lg shadow-md h-fit border border-gray-100">
                         <h2 className="text-xl font-bold mb-4 text-gray-800">Order Summary</h2>
                         <div className="flex justify-between mb-2 text-gray-600">
-                            <span>Subtotal ({cartItems.reduce((acc, item) => acc + item.quantity, 0)} items)</span>
+                            <span>Subtotal</span>
                             <span>₹{totalPrice}</span>
                         </div>
                         <div className="flex justify-between mb-6 text-gray-600">
@@ -53,7 +124,10 @@ const Cart = () => {
                             <span>Total</span>
                             <span>₹{totalPrice}</span>
                         </div>
-                        <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition active:scale-95" onClick={() => alert("Payment Integration Coming Next!")}>
+                        <button
+                            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition active:scale-95"
+                            onClick={handleCheckout}
+                        >
                             Proceed to Checkout
                         </button>
                     </div>
