@@ -1,5 +1,5 @@
-import pg from 'pg'
-import dotenv from 'dotenv'
+import pg from 'pg';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -7,19 +7,17 @@ const { Pool } = pg;
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
-const connectDB = async () =>{
-    try{
+const connectDB = async () => {
+    try {
         await pool.connect();
-        console.log("Database Connected Successfully!");
-
-    } catch(err){
-        console.error("Error connecting to Database",err.message);
+        console.log('✅ Database Connected Successfully');
+    } catch (err) {
+        console.error('❌ Database Connection Failed:', err.message);
         process.exit(1);
     }
+};
 
-}
-
-export {pool , connectDB}
+export { pool, connectDB };
