@@ -6,7 +6,9 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store.js';
 import axios from "axios";
 
-axios.defaults.baseURL = "https://ecommerce-fullstack-97s3.onrender.com";
+axios.defaults.baseURL = import.meta.env.MODE === "development"
+    ? "http://localhost:5000"
+    : "https://ecommerce-fullstack-97s3.onrender.com";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
