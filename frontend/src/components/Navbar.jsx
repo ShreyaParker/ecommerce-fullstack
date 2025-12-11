@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User } from 'lucide-react';
+import { ShoppingCart, User, Package } from 'lucide-react'; // <--- Import Package icon
 import { useSelector } from 'react-redux';
 
 const Navbar = () => {
@@ -8,14 +8,26 @@ const Navbar = () => {
     return (
         <nav className="bg-gray-900 text-white shadow-md sticky top-0 z-50">
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+
                 <Link to="/" className="text-2xl font-bold tracking-wider hover:text-blue-400 transition">
                     MyShop
                 </Link>
 
+
                 <div className="flex items-center space-x-8">
-                    <Link to="/" className="hover:text-blue-400 transition font-medium">Home</Link>
+                    <Link to="/" className="hover:text-blue-400 transition font-medium">
+                        Home
+                    </Link>
+
+
+                    <Link to="/myorders" className="flex items-center hover:text-blue-400 transition font-medium">
+                        <Package size={20} className="mr-2" />
+                        My Orders
+                    </Link>
+
                     <Link to="/login" className="flex items-center hover:text-blue-400 transition font-medium">
-                        <User size={20} className="mr-2" /> Login
+                        <User size={20} className="mr-2" />
+                        Login
                     </Link>
 
                     <Link to="/cart" className="relative group hover:text-yellow-400 transition">
